@@ -1,0 +1,53 @@
+/* Background */
+.form-bg {
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+/* Card Style */
+.form-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 35px 40px;
+  max-width: 900px;
+}
+
+/* Labels and Inputs */
+.form-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.form-control,
+.form-select {
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 10px 12px;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: #0069d9;
+}
+
+.btn-outline-secondary {
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.text-primary {
+  color: #007bff !important;
+}

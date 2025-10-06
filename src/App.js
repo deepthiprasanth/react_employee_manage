@@ -1,24 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import AdminDashboard from "./pages/AdminDashboard";
+import RegisterPage from "./pages/RegisterPage";
+import EmployeeDashboard from "./pages/EmployeeDashboard";
+import EmployeeProfile from "./pages/EmployeeProfile";
+import CreateEmployee from "./pages/CreateEmployee";
+import EditEmployee from "./pages/EditEmployee";
+import EmployeeDetails from "./pages/EmployeeDetails";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        {/* Default redirect */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
+        {/* Auth */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/* Admin routes */}
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/admin-dashboard/create-employee" element={<CreateEmployee />} />
+        <Route path="/admin-dashboard/employees/:id" element={<EmployeeProfile />} />
+        <Route path="/admin-dashboard/employees/:id/edit" element={<EditEmployee />} />
+        <Route path="/admin-dashboard/employees" element={<EmployeeDetails />} />
+
+        {/* Employee (self-service) */}
+        <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+      </Routes>
+    </Router>
   );
 }
 
