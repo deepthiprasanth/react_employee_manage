@@ -89,7 +89,7 @@ const AdminDashboard = () => {
                     width="35"
                     height="35"
                   /> */}
-                  <span>Admin</span>
+                  <span>Newadmin</span>
                 </a>
                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
                   <li>
