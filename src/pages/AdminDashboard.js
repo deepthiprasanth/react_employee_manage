@@ -1,10 +1,29 @@
 // src/pages/AdminDashboard.js
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+
+  // ✅ Check authentication on page load
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem("isAuthenticated");
+    const role = localStorage.getItem("role");
+
+    if (!isAuthenticated || role !== "ADMIN") {
+      navigate("/login"); // redirect to login if not admin or not logged in
+    }
+  }, [navigate]);
+
+  // ✅ Logout function
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("role");
+    navigate("/login");
+  };
+
   return (
     <div className="admin-dashboard">
       {/* ===== Navbar ===== */}
@@ -64,31 +83,24 @@ const AdminDashboard = () => {
                       Employee Details
                     </Link>
                   </li>
-                    <li className="nav-item">
-                <Link to="/admin-dashboard/create-employee" className="btn">
-                  Create Employee
-                </Link>
-              </li>
+                  <li>
+                    <Link className="dropdown-item" to="/admin-dashboard/create-employee">
+                      Create Employee
+                    </Link>
+                  </li>
                 </ul>
               </li>
 
               {/* ===== Admin Profile Dropdown ===== */}
               <li className="nav-item dropdown mx-2">
                 <a
-                  className="nav-link dropdown-toggle d-flex align-items-center"
+                  className="nav-link dropdown-toggle"
                   href="#"
                   id="adminDropdown"
                   role="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  {/* <img
-                    src="https://via.placeholder.com/35"
-                    alt="Admin"
-                    className="rounded-circle me-2"
-                    width="35"
-                    height="35"
-                  /> */}
                   <span>Admin</span>
                 </a>
                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
@@ -98,9 +110,9 @@ const AdminDashboard = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link className="dropdown-item" to="/login">
+                    <button onClick={handleLogout} className="dropdown-item">
                       Logout
-                    </Link>
+                    </button>
                   </li>
                 </ul>
               </li>
@@ -111,12 +123,14 @@ const AdminDashboard = () => {
 
       {/* ===== Dashboard Content ===== */}
       <div className="container my-4">
-        <h4 className="fw-bold " style={{ color: "white" }}>Hello, Admin 👋</h4>
+        <h4 className="fw-bold" style={{ color: "white" }}>
+          Hello, Admin 👋
+        </h4>
 
         {/* Metric Cards */}
         <div className="row mt-4 g-4">
           <div className="col-md-3">
-            <div className="dashboard-card text-center p-4"> 
+            <div className="dashboard-card text-center p-4">
               <i className="fas fa-users fa-2x text-primary mb-2"></i>
               <h6>Total Employees</h6>
               <h3>53</h3>
@@ -141,58 +155,6 @@ const AdminDashboard = () => {
               <i className="fas fa-user-times fa-2x text-danger mb-2"></i>
               <h6>On Leave</h6>
               <h3>7</h3>
-            </div>
-          </div>
-        </div>
-
-        {/* Employee Lists */}
-        <div className="row mt-5 g-4">
-          <div className="col-md-6">
-            <div className="dashboard-card p-4">
-              <h5>Employees Present</h5>
-              <ul className="list-group list-group-flush mt-3">
-                <li className="list-group-item d-flex align-items-center justify-content-between">
-                  <div>
-                    <img
-                      src="https://via.placeholder.com/40"
-                      alt="Emp"
-                      className="rounded-circle me-2"
-                    />
-                    <span>Kitty</span>
-                  </div>
-                  <span className="text-muted small">09:02 AM</span>
-                </li>
-                <li className="list-group-item d-flex align-items-center justify-content-between">
-                  <div>
-                    <img
-                      src="https://via.placeholder.com/40"
-                      alt="Emp"
-                      className="rounded-circle me-2"
-                    />
-                    <span>Olivia</span>
-                  </div>
-                  <span className="text-muted small">09:04 AM</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="col-md-6">
-            <div className="dashboard-card p-4">
-              <h5>Employees on Leave</h5>
-              <ul className="list-group list-group-flush mt-3">
-                <li className="list-group-item d-flex align-items-center justify-content-between">
-                  <div>
-                    <img
-                      src="https://via.placeholder.com/40"
-                      alt="Emp"
-                      className="rounded-circle me-2"
-                    />
-                    <span>Peter</span>
-                  </div>
-                  <span className="text-muted small">2/3 days</span>
-                </li>
-              </ul>
             </div>
           </div>
         </div>

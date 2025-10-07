@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");   // 🔹 use email instead of username
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
@@ -12,24 +12,29 @@ const LoginPage = () => {
 
     try {
       const response = await axios.post("http://localhost:8080/api/auth/login", {
-        email,    // 🔹 must match backend AuthRequest
+        email,
         password,
       });
 
-      // Backend returns JWT token and role
+      // ✅ Backend returns token & role
       const { token, role } = response.data;
 
+      // ✅ Save in localStorage for protected route access
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
+      localStorage.setItem("isAuthenticated", "true");
 
+      // ✅ Navigate based on role
       if (role === "ADMIN") {
         navigate("/admin-dashboard");
-      } else {
+      } else if (role === "EMPLOYEE" || role === "USER") {
         navigate("/employee-dashboard");
+      } else {
+        alert("Unknown role — cannot login");
       }
     } catch (error) {
+      console.error("Login failed:", error);
       alert("Invalid email or password");
-      console.error(error);
     }
   };
 

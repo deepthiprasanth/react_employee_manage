@@ -1,5 +1,6 @@
 // src/pages/EmployeeDashboard.js
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const EmployeeDashboard = () => {
   const [employee, setEmployee] = useState({
@@ -12,13 +13,24 @@ const EmployeeDashboard = () => {
     joiningDate: "2023-01-15",
   });
 
-  // Example: Fetch employee data from backend (Spring Boot API)
-  // useEffect(() => {
-  //   fetch("/api/employee/123")
-  
-  //     .then(res => res.json())
-  //     .then(data => setEmployee(data));
-  // }, []);
+  const navigate = useNavigate();
+
+  // ✅ Check authentication on page load
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem("isAuthenticated");
+    const role = localStorage.getItem("role");
+
+    if (!isAuthenticated || role !== "EMPLOYEE") {
+      navigate("/login"); // redirect to login if not employee or not logged in
+    }
+  }, [navigate]);
+
+  // ✅ Logout function
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("role");
+    navigate("/login");
+  };
 
   return (
     <div className="bg02">
@@ -46,10 +58,10 @@ const EmployeeDashboard = () => {
               <div className="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul className="navbar-nav ml-auto">
                   <li className="nav-item">
-                    <a className="nav-link d-flex" href="/login">
+                    <button onClick={handleLogout} className="btn nav-link d-flex">
                       <i className="far fa-user mr-2 tm-logout-icon"></i>
                       <span>Logout</span>
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </div>
@@ -60,7 +72,7 @@ const EmployeeDashboard = () => {
         {/* Employee Details */}
         <div className="row tm-mt-big">
           <div className="col-xl-8 col-lg-10 col-md-12 col-sm-12 mx-auto">
-            <div className="bg-white tm-block h-100">
+            <div className="bg-white tm-block h-100 p-4 rounded shadow-sm">
               <h2 className="tm-block-title">Employee Details</h2>
               <div className="row mt-4">
                 <div className="col-md-6">
@@ -83,10 +95,7 @@ const EmployeeDashboard = () => {
         <footer className="row tm-mt-small">
           <div className="col-12 font-weight-light">
             <p className="d-inline-block tm-bg-black text-white py-2 px-4">
-              Copyright &copy; 2025 Employee Dashboard. Created by
-              <a rel="nofollow" href="https://www.tooplate.com" className="text-white tm-footer-link">
-                Tooplate
-              </a>
+              Copyright © 2025 Employee Dashboard.
             </p>
           </div>
         </footer>
