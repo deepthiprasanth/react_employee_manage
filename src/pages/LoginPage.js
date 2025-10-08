@@ -1,94 +1,84 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../axios"; // ✅ centralized axios instance
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const LoginPage = () => {
-  const [email, setEmail] = useState("");   // 🔹 use email instead of username
+const Login = () => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  // ✅ Handle form submit
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
-      const response = await axios.post("http://localhost:8080/api/auth/login", {
-        email,    // 🔹 must match backend AuthRequest
-        password,
-      });
+      const response = await api.post("/employees/login", { email, password });
 
-      // Backend returns JWT token and role
+      // Assuming backend returns: { token, role, message }
       const { token, role } = response.data;
 
+      // ✅ Store token and role in localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
+      localStorage.setItem("isAuthenticated", "true");
 
+      // ✅ Navigate based on role
       if (role === "ADMIN") {
         navigate("/admin-dashboard");
+      } else if (role === "TEAM_LEAD") {
+        navigate("/teamlead-dashboard");
       } else {
         navigate("/employee-dashboard");
       }
-    } catch (error) {
-      alert("Invalid email or password");
-      console.error(error);
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        setError("Invalid email or password");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     }
   };
 
   return (
-    <div className="bg03">
-      <div className="container">
-        <div className="row tm-mt-big">
-          <div className="col-12 mx-auto tm-login-col">
-            <div className="bg-white tm-block">
-              <div className="row">
-                <div className="col-12 text-center">
-                  <i className="fas fa-3x fa-tachometer-alt tm-site-icon text-center"></i>
-                  <h2 className="tm-block-title mt-3">Login</h2>
-                </div>
-              </div>
-              <div className="row mt-2">
-                <div className="col-12">
-                  <form className="tm-login-form" onSubmit={handleSubmit}>
-                    <div className="input-group">
-                      <label className="col-xl-4 col-lg-4 col-md-4 col-sm-5 col-form-label">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control validate col-xl-9 col-lg-8 col-md-8 col-sm-7"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="input-group mt-3">
-                      <label className="col-xl-4 col-lg-4 col-md-4 col-sm-5 col-form-label">
-                        Password
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control validate"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="input-group mt-3">
-                      <button
-                        type="submit"
-                        className="btn btn-primary d-inline-block mx-auto"
-                      >
-                        Login
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
+    <div className="container d-flex justify-content-center align-items-center vh-100">
+      <div className="card shadow-lg p-4" style={{ width: "400px" }}>
+        <h3 className="text-center mb-3 text-primary">Employee Login</h3>
+
+        {error && <div className="alert alert-danger">{error}</div>}
+
+        <form onSubmit={handleLogin}>
+          <div className="mb-3">
+            <label className="form-label">Email</label>
+            <input
+              type="text"
+              className="form-control"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
-        </div>
+
+          <div className="mb-3">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              className="form-control"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn btn-primary w-100">
+            Login
+          </button>
+        </form>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default Login;

@@ -3,17 +3,17 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
-.navbar .nav-link {
-  color: #413d3d !important;
-  font-weight: 500;
-  transition: 0.3s;
+/* Navbar Styles */
+.navbar {
+  padding: 0.75rem 1rem;
 }
 
-.navbar .nav-link:hover,
-.navbar .nav-link.active {
-  color: #007bff !important;
+.navbar-brand span {
+  font-weight: 600;
+  color: #007bff;
 }
 
+/* Dashboard cards */
 .dashboard-card {
   background-color: #fff;
   border-radius: 16px;
@@ -23,7 +23,7 @@ body {
 
 .dashboard-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 12px rgba(229, 217, 217, 0.08);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
 }
 
 .dashboard-card h6 {
@@ -32,20 +32,5 @@ body {
 
 .dashboard-card h3 {
   font-weight: bold;
-  color: #222020;
-}
-
-.list-group-item {
-  border: none;
-  padding: 0.8rem 0;
-}
-
-.list-group-item img {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-}
-
-.list-group-item span {
-  font-weight: 500;
+  color: #222;
 }
