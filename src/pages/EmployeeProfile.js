@@ -1,200 +1,119 @@
-// src/pages/AdminDashboard.js
-import React from "react";
-import { Link } from "react-router-dom";
-import "./AdminDashboard.css";
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const AdminDashboard = () => {
+const EmployeeProfile = () => {
+  const { id } = useParams();
+  const [employee, setEmployee] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`http://localhost:8080/api/admin/employees/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = res.data;
+
+        // ✅ Flatten nested objects (employee, professional, personal, etc.)
+        const flatData = {
+          ...data,
+          ...data.employee, // brings fullName, phoneNumber, email, etc. to top
+          ...data.professionalDetails,
+          ...data.occupationalDetails,
+          ...data.personalDetails,
+          ...data.salaryDetails,
+        };
+
+        setEmployee(flatData);
+      } catch (error) {
+        console.error("Failed to fetch employee details:", error);
+      }
+    };
+
+    fetchEmployee();
+  }, [id]);
+
+  if (!employee) {
+    return (
+      <div className="text-center mt-5">
+        <h4>Loading Employee Profile...</h4>
+      </div>
+    );
+  }
+
   return (
-    <div className="admin-dashboard">
-      {/* ===== Navbar ===== */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
-        <div className="container">
-          <Link className="navbar-brand fw-bold text-primary" to="/admin-dashboard">
-            SOLACE
-          </Link>
+    <div className="container mt-4">
+      <button
+          className="btn btn-primary mt-3"
+          onClick={() => navigate("/admin-dashboard/employees")}
+        >
+          Back to Employee List
+        </button>
 
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
+      <div className="card p-4">
+        <h3 className="mb-4">Employee Profile</h3>
 
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav ms-auto align-items-center">
-              <li className="nav-item mx-2">
-                <Link className="nav-link" to="/admin-dashboard">
-                  Dashboard
-                </Link>
-              </li>
-              <li className="nav-item mx-2">
-                <Link className="nav-link" to="#">
-                  Attendance
-                </Link>
-              </li>
-              <li className="nav-item mx-2">
-                <Link className="nav-link" to="#">
-                  Leaves
-                </Link>
-              </li>
-              <li className="nav-item mx-2">
-                <Link className="nav-link" to="#">
-                  Salary
-                </Link>
-              </li>
+        {/* BASIC INFO */}
+        <h5 className="mb-3">Basic Info</h5>
+        <table className="table table-bordered">
+          <tbody>
+            <tr><th>ID</th><td>{employee.id || "-"}</td></tr>
+            <tr><th>Full Name</th><td>{employee.fullName || "-"}</td></tr>
+            <tr><th>Email</th><td>{employee.email || "-"}</td></tr>
+            <tr><th>Phone</th><td>{employee.phoneNumber || "-"}</td></tr>
+            <tr><th>Branch</th><td>{employee.branch || "-"}</td></tr>
+            <tr><th>Role</th><td>{employee.role || "-"}</td></tr>
+          </tbody>
+        </table>
 
-              {/* Employee Dropdown */}
-              <li className="nav-item dropdown mx-2">
-                <a
-                  className="nav-link dropdown-toggle"
-                  href="#"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                >
-                  Employee Management
-                </a>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link className="dropdown-item" to="/employee-details">
-                      Employee Details
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/create-employee">
-                      Create Employee
-                    </Link>
-                  </li>
-                </ul>
-              </li>
+        {/* PROFESSIONAL DETAILS */}
+        <h5 className="mt-4 mb-3">Professional Details</h5>
+        <table className="table table-bordered">
+          <tbody>
+            <tr><th>Designation</th><td>{employee.designation || "-"}</td></tr>
+            <tr><th>Experience</th><td>{employee.totalExperience || "-"}</td></tr>
+            <tr><th>Highest Qualification</th><td>{employee.highestQualification || "-"}</td></tr>
+            <tr><th>Institution</th><td>{employee.institution || "-"}</td></tr>
+            <tr><th>Year of Passing</th><td>{employee.yearOfPassing || "-"}</td></tr>
+          </tbody>
+        </table>
 
-              {/* Profile */}
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle d-flex align-items-center"
-                  href="#"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                >
-                  <img
-                    src="https://via.placeholder.com/35"
-                    alt="Admin"
-                    className="rounded-circle me-2"
-                    width="35"
-                    height="35"
-                  />
-                  <span>Admin</span>
-                </a>
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <Link className="dropdown-item" to="#">
-                      Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/logout">
-                      Logout
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+        {/* OCCUPATIONAL DETAILS */}
+        <h5 className="mt-4 mb-3">Occupational Details</h5>
+        <table className="table table-bordered">
+          <tbody>
+            <tr><th>Employment Start Date</th><td>{employee.employmentStartDate || "-"}</td></tr>
+            <tr><th>Employment End Date</th><td>{employee.employmentEndDate || "-"}</td></tr>
+            <tr><th>Reason of Leaving</th><td>{employee.reasonOfLeaving || "-"}</td></tr>
+          </tbody>
+        </table>
 
-      {/* ===== Dashboard Content ===== */}
-      <div className="container my-4">
-        <h4 className="fw-bold">Hello, Admin 👋</h4>
-        <p className="text-muted">Hope you're having a productive day :)</p>
+        {/* PERSONAL DETAILS */}
+        <h5 className="mt-4 mb-3">Personal Details</h5>
+        <table className="table table-bordered">
+          <tbody>
+            <tr><th>Gender</th><td>{employee.gender || "-"}</td></tr>
+            <tr><th>Date of Birth</th><td>{employee.dateOfBirth || "-"}</td></tr>
+            <tr><th>Address</th><td>{employee.address || "-"}</td></tr>
+          </tbody>
+        </table>
 
-        {/* Metric Cards */}
-        <div className="row mt-4 g-4">
-          <div className="col-md-3">
-            <div className="dashboard-card text-center p-4">
-              <i className="fas fa-users fa-2x text-primary mb-2"></i>
-              <h6>Total Employees</h6>
-              <h3>53</h3>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div className="dashboard-card text-center p-4">
-              <i className="fas fa-user-check fa-2x text-success mb-2"></i>
-              <h6>Present Today</h6>
-              <h3>44</h3>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div className="dashboard-card text-center p-4">
-              <i className="fas fa-user-clock fa-2x text-warning mb-2"></i>
-              <h6>Late Today</h6>
-              <h3>2</h3>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div className="dashboard-card text-center p-4">
-              <i className="fas fa-user-times fa-2x text-danger mb-2"></i>
-              <h6>On Leave</h6>
-              <h3>7</h3>
-            </div>
-          </div>
-        </div>
-
-        {/* Employee Lists */}
-        <div className="row mt-5 g-4">
-          <div className="col-md-6">
-            <div className="dashboard-card p-4">
-              <h5>Employees Present</h5>
-              <ul className="list-group list-group-flush mt-3">
-                <li className="list-group-item d-flex align-items-center justify-content-between">
-                  <div>
-                    <img
-                      src="https://via.placeholder.com/40"
-                      alt="Emp"
-                      className="rounded-circle me-2"
-                    />
-                    <span>Kitty</span>
-                  </div>
-                  <span className="text-muted small">09:02 AM</span>
-                </li>
-                <li className="list-group-item d-flex align-items-center justify-content-between">
-                  <div>
-                    <img
-                      src="https://via.placeholder.com/40"
-                      alt="Emp"
-                      className="rounded-circle me-2"
-                    />
-                    <span>Olivia</span>
-                  </div>
-                  <span className="text-muted small">09:04 AM</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="col-md-6">
-            <div className="dashboard-card p-4">
-              <h5>Employees on Leave</h5>
-              <ul className="list-group list-group-flush mt-3">
-                <li className="list-group-item d-flex align-items-center justify-content-between">
-                  <div>
-                    <img
-                      src="https://via.placeholder.com/40"
-                      alt="Emp"
-                      className="rounded-circle me-2"
-                    />
-                    <span>Peter</span>
-                  </div>
-                  <span className="text-muted small">2/3 days</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+        {/* SALARY DETAILS */}
+        <h5 className="mt-4 mb-3">Salary Details</h5>
+        <table className="table table-bordered">
+          <tbody>
+            <tr><th>Basic Pay</th><td>{employee.basicPay || "-"}</td></tr>
+            <tr><th>Allowances</th><td>{employee.allowances || "-"}</td></tr>
+            <tr><th>Total Salary</th><td>{employee.totalSalary || "-"}</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   );
 };
 
-export default AdminDashboard;
+export default EmployeeProfile;
