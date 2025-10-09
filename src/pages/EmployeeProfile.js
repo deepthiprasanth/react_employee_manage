@@ -9,33 +9,29 @@ const EmployeeProfile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchEmployee = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:8080/api/admin/employees/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  const fetchEmployee = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`http://localhost:8080/api/admin/employees/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        const data = res.data;
+      // Debug: Check the actual structure
+      console.log("=== EMPLOYEE DATA STRUCTURE ===");
+      console.log("Main object:", res.data);
+      console.log("Professional details:", res.data.professionalDetails);
+      console.log("Personal details:", res.data.personalDetails);
+      console.log("Occupational details:", res.data.occupationalDetails);
+      console.log("Salary details:", res.data.salaryDetails);
+      
+      setEmployee(res.data);
+    } catch (error) {
+      console.error("Failed to fetch employee details:", error);
+    }
+  };
 
-        // ✅ Flatten nested objects (employee, professional, personal, etc.)
-        const flatData = {
-          ...data,
-          ...data.employee, // brings fullName, phoneNumber, email, etc. to top
-          ...data.professionalDetails,
-          ...data.occupationalDetails,
-          ...data.personalDetails,
-          ...data.salaryDetails,
-        };
-
-        setEmployee(flatData);
-      } catch (error) {
-        console.error("Failed to fetch employee details:", error);
-      }
-    };
-
-    fetchEmployee();
-  }, [id]);
+  fetchEmployee();
+}, [id]);
 
   if (!employee) {
     return (
@@ -48,11 +44,11 @@ const EmployeeProfile = () => {
   return (
     <div className="container mt-4">
       <button
-          className="btn btn-primary mt-3"
-          onClick={() => navigate("/admin-dashboard/employees")}
-        >
-          Back to Employee List
-        </button>
+        className="btn btn-primary mt-3"
+        onClick={() => navigate("/admin-dashboard/employees")}
+      >
+        Back to Employee List
+      </button>
 
       <div className="card p-4">
         <h3 className="mb-4">Employee Profile</h3>
@@ -74,11 +70,26 @@ const EmployeeProfile = () => {
         <h5 className="mt-4 mb-3">Professional Details</h5>
         <table className="table table-bordered">
           <tbody>
-            <tr><th>Designation</th><td>{employee.designation || "-"}</td></tr>
-            <tr><th>Experience</th><td>{employee.totalExperience || "-"}</td></tr>
-            <tr><th>Highest Qualification</th><td>{employee.highestQualification || "-"}</td></tr>
-            <tr><th>Institution</th><td>{employee.institution || "-"}</td></tr>
-            <tr><th>Year of Passing</th><td>{employee.yearOfPassing || "-"}</td></tr>
+            <tr>
+              <th>Highest Qualification</th>
+              <td>{employee.professionalDetails?.highestQualification || "-"}</td>
+            </tr>
+            <tr>
+              <th>Institution</th>
+              <td>{employee.professionalDetails?.institution || "-"}</td>
+            </tr>
+            <tr>
+              <th>Year of Passing</th>
+              <td>{employee.professionalDetails?.yearOfPassing || "-"}</td>
+            </tr>
+            <tr>
+              <th>Total Experience</th>
+              <td>{employee.professionalDetails?.totalExperience || "-"}</td>
+            </tr>
+            <tr>
+              <th>Areas of Expertise</th>
+              <td>{employee.professionalDetails?.areasOfExpertise || "-"}</td>
+            </tr>
           </tbody>
         </table>
 
@@ -86,9 +97,18 @@ const EmployeeProfile = () => {
         <h5 className="mt-4 mb-3">Occupational Details</h5>
         <table className="table table-bordered">
           <tbody>
-            <tr><th>Employment Start Date</th><td>{employee.employmentStartDate || "-"}</td></tr>
-            <tr><th>Employment End Date</th><td>{employee.employmentEndDate || "-"}</td></tr>
-            <tr><th>Reason of Leaving</th><td>{employee.reasonOfLeaving || "-"}</td></tr>
+            <tr>
+              <th>Employment Type</th>
+              <td>{employee.occupationalDetails?.employmentType || "-"}</td>
+            </tr>
+            <tr>
+              <th>Shift Type</th>
+              <td>{employee.occupationalDetails?.shiftType || "-"}</td>
+            </tr>
+            <tr>
+              <th>Offer Letter Signed</th>
+              <td>{employee.occupationalDetails?.offerLetterSigned ? "Yes" : "No"}</td>
+            </tr>
           </tbody>
         </table>
 
@@ -96,9 +116,30 @@ const EmployeeProfile = () => {
         <h5 className="mt-4 mb-3">Personal Details</h5>
         <table className="table table-bordered">
           <tbody>
-            <tr><th>Gender</th><td>{employee.gender || "-"}</td></tr>
-            <tr><th>Date of Birth</th><td>{employee.dateOfBirth || "-"}</td></tr>
-            <tr><th>Address</th><td>{employee.address || "-"}</td></tr>
+            <tr>
+              <th>Date of Birth</th>
+              <td>{employee.personalDetails?.dateOfBirth || "-"}</td>
+            </tr>
+            <tr>
+              <th>Gender</th>
+              <td>{employee.personalDetails?.gender || "-"}</td>
+            </tr>
+            <tr>
+              <th>Blood Group</th>
+              <td>{employee.personalDetails?.bloodGroup || "-"}</td>
+            </tr>
+            <tr>
+              <th>Marital Status</th>
+              <td>{employee.personalDetails?.maritalStatus || "-"}</td>
+            </tr>
+            <tr>
+              <th>Aadhar Number</th>
+              <td>{employee.personalDetails?.aadharNumber || "-"}</td>
+            </tr>
+            <tr>
+              <th>PAN Number</th>
+              <td>{employee.personalDetails?.panNumber || "-"}</td>
+            </tr>
           </tbody>
         </table>
 
@@ -106,9 +147,30 @@ const EmployeeProfile = () => {
         <h5 className="mt-4 mb-3">Salary Details</h5>
         <table className="table table-bordered">
           <tbody>
-            <tr><th>Basic Pay</th><td>{employee.basicPay || "-"}</td></tr>
-            <tr><th>Allowances</th><td>{employee.allowances || "-"}</td></tr>
-            <tr><th>Total Salary</th><td>{employee.totalSalary || "-"}</td></tr>
+            <tr>
+              <th>Basic Pay</th>
+              <td>{employee.salaryDetails?.basicPay || "-"}</td>
+            </tr>
+            <tr>
+              <th>HRA</th>
+              <td>{employee.salaryDetails?.hra || "-"}</td>
+            </tr>
+            <tr>
+              <th>Gross Salary</th>
+              <td>{employee.salaryDetails?.grossSalary || "-"}</td>
+            </tr>
+            <tr>
+              <th>Net Salary</th>
+              <td>{employee.salaryDetails?.netSalary || "-"}</td>
+            </tr>
+            <tr>
+              <th>Bank Name</th>
+              <td>{employee.salaryDetails?.bankName || "-"}</td>
+            </tr>
+            <tr>
+              <th>Account Number</th>
+              <td>{employee.salaryDetails?.bankAccountNumber || "-"}</td>
+            </tr>
           </tbody>
         </table>
       </div>
